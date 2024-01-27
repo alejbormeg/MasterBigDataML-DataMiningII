@@ -123,16 +123,62 @@ linkage_matrix = sch.linkage(df_std_distance, method='ward')  # You can choose a
 # Create the dendrogram
 dendrogram = sch.dendrogram(linkage_matrix, labels=penguins_data_cluster.index, leaf_font_size=9, leaf_rotation=90)
 
+# Add a horizontal line at y=100
+plt.axhline(y=300, color='r', linestyle='--')
+
 # Display the dendrogram
 plt.show()
 
+# Assign data points to 4 clusters
+num_clusters = 2
+cluster_assignments = sch.fcluster(linkage_matrix, num_clusters, criterion='maxclust')
+
+# Display the cluster assignments
+print("Cluster Assignments:", cluster_assignments)
+
+# Display the dendrogram
+plt.show()
+
+"""# Añadimos la nueva variable a nustro data frame"""
+
+# Create a new column 'Cluster' and assign the 'cluster_assignments' values to it
+df_std['Cluster4'] = cluster_assignments
+
+# Now 'df' contains a new column 'Cluster' with the cluster assignments
+
+print(df_std["Cluster4"])
+
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(df_std)
+
+# Create a new DataFrame for the 2D principal components
+df_pca = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
+
+# Step 2: Create a scatter plot with colors for clusters
+plt.figure(figsize=(10, 6))
+
+# Loop through unique cluster assignments and plot data points with the same color
+for cluster in np.unique(cluster_assignments):
+    plt.scatter(df_pca.loc[cluster_assignments == cluster, 'PC1'],
+                df_pca.loc[cluster_assignments == cluster, 'PC2'],
+                label=f'Cluster {cluster}')
+# Add labels to data points
+for i, row in df_pca.iterrows():
+    plt.text(row['PC1'], row['PC2'], str(df_std.index[i]), fontsize=8)
+
+plt.title("2D PCA Plot with Cluster Assignments")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.legend()
+plt.grid()
+plt.show()
 
 # Justificar que se elejimos al final 4 grupos por el dendograma
 
 #################################### Pregunta 5 ###################################################################
 
-# Set the number of clusters (k=4)
-k = 4
+# Set the number of clusters (k=2)
+k = 2
 
 # Initialize the KMeans model
 kmeans = KMeans(n_clusters=k, random_state=0)
@@ -227,7 +273,7 @@ plt.show()
 """Run K-means clustering with the optimal number of clusters (determined using the Silhouette Method) and obtain cluster labels for each data point:"""
 
 # Assuming 'df_std_distance' is your standardized data and '4' is the optimal number of clusters
-kmeans = KMeans(n_clusters=4, random_state=0)
+kmeans = KMeans(n_clusters=2, random_state=0)
 kmeans.fit(df_std)
 labels = kmeans.labels_
 

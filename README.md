@@ -228,17 +228,65 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 #### Determinación del Número de Grupos (1 pt)
 
 1. **Agrupamiento Jerárquico y Dendrograma**
-   - Elección y justificación del número de grupos.
 
+    En primer lugar vamos a visualizar en un mapa de calor el dataset que estamos estudiando y vamos a ver el clustermap que sugiere `seaborn`:
+
+    ![](./imgs/cluster_jer_1.png)
+
+    Tras esto procedemos a realizar la matriz de distancias sin estandarizar los datos y estandarizándolos para ver las diferencias:
+
+    ![](./imgs/matriz_dist_1.png)
+    ![](./imgs/matriz_dist_2.png)
+
+    Realizamos el clustering jerárquico sobre la matriz de distancias: 
+
+    ![](./imgs/heatmap_clust_jer.png)
+
+    Calculamos el dendograma:
+
+    ![](./imgs/dendograma.png)
+
+    Atendiendo a los resultados, parece que 2 clusters son un número razonable. Vamos a asignar cada observación a su cluster correspondiente: 
+
+    ![](./imgs/resultado_clust_jer.png)
+
+    Cómo se puede apreciar en el gráfico, se ven claramente dos grupos, por lo que parece una asignación correcta.
+    
 #### Agrupamiento K-Means (1 pt)
 
 1. **Implementación y Experimentación con K-Means**
-   - Determinación del número óptimo de grupos usando métricas apropiadas.
+
+    En base al estudio previo se ha optado por realizar el algoritmo con 2 grupos:
+
+    ![](./imgs/resultado_clust_no_jer.png)
+
+    Como vemos, obtenemos un resultado idéntico al del clustering jerárquico, debido a que los dos grupos están muy claramente diferenciados.
+
+    Vamos ahora a suponer que no heos realizado el clustering jerárquico y vamos a elegir el número de grupos en base al método del codo y Shilouette. Los resultados obtenidos son los siguientes: 
+
+    ![](./imgs/Codo_no_jer.png)
+    ![](./imgs/Silouhette_no_jer.png)
+
+    Como vemos, con ambos métodos se sugiere que un total de dos grupos es suficiente, en el método del codo porque en esta cifra se puede apreciar el "codo" del gráfico y en el Shilouette porque es en 2 dónde se alcanza el máximo.
+
 
 #### Validación del Agrupamiento (1 pt)
 
 1. **Métricas de Validación de Agrupamiento**
-   - Evaluación de la calidad de los resultados del agrupamiento.
+   
+   Evaluamos la calidad del agrupamiento usando los coeficientes de Silhouette:
+
+   ![](./imgs/Silhouette_cluster_no_jer.png)
+
+    * **Valores del Coeficiente de Silueta:** El coeficiente de silueta varía de -1 a +1. Un valor alto indica que el objeto está bien emparejado con su propio cluster y mal emparejado con los clusters vecinos. Si la mayoría de los puntos tienen un valor alto, entonces la configuración de clustering es apropiada. En la imagen, parece que la mayoría de los valores de silueta están por encima de cero, lo cual es una buena señal.
+
+    * **Ancho del Gráfico de Silueta:** El ancho del gráfico de silueta mide la distancia al cluster vecino más cercano. Un gráfico de silueta más ancho sugiere que los clusters están bien separados.
+
+    * **Clusters (0 y 1):** Hay dos clusters representados por dos colores diferentes (digamos, naranja y púrpura). No se observan valores negativos significativos en el gráfico de silueta, lo que generalmente indicaría que los puntos podrían haber sido asignados a clusters incorrectos.
+
+    * **Tamaño de los Clusters:** El gráfico sugiere que el tamaño de los dos clusters podría ser desigual. El cluster etiquetado como '0' parece ser más grande que el cluster '1', lo que indica que contiene más puntos.
+
+    * **Consistencia en los Clusters:** El cluster naranja parece tener una consistencia de anchura en sus valores de silueta, lo que sugiere que los puntos dentro de este cluster son bastante similares entre sí. Por otro lado, el cluster púrpura tiene una mayor variación en la anchura, lo que puede indicar que hay más variabilidad en la similitud de los puntos dentro de ese cluster.
 
 #### Comparación de Métodos de Agrupamiento (1 pt)
 
@@ -255,36 +303,3 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 1. **Resumen de Hallazgos**
    - Discusión de limitaciones o desafíos encontrados.
    - Conclusiones finales del análisis.
-
-
-### Pregunta 3
-a) Comentario sobre los gráficos que representan las variables en los planos formados por las componentes:
-Las imágenes que muestran las contribuciones de las variables a las componentes principales nos ayudan a entender qué característica física de los pingüinos es capturada por cada componente principal. Generalmente, una componente principal que tiene altas cargas (valores absolutos grandes en sus vectores propios) para ciertas variables significa que esas variables contribuyen significativamente a la variabilidad en esa dirección.
-
-    La Primera Componente Principal parece capturar la mayor parte de la variabilidad asociada con el tamaño general de los pingüinos, ya que variables como la longitud del pico, la profundidad del pico, y la masa corporal tienen grandes contribuciones. Esto sugiere que esta componente podría interpretarse como un factor de "tamaño general" o "masa corporal" de los pingüinos.
-
-    La Segunda Componente Principal podría estar capturando aspectos relacionados con la morfología específica, posiblemente diferenciando entre las proporciones del pico y la longitud de las aletas en relación con el tamaño corporal.
-
-b) Comentario sobre los gráficos que representan las observaciones en los nuevos ejes:
-Las especies de pingüinos que se destacan en cada componente se pueden inferir de la posición de las observaciones en el gráfico de dispersión de PCA.
-
-    Las observaciones que tienen valores altos en la Primera Componente Principal son aquellos pingüinos que son grandes en términos de masa corporal y tamaño del pico.
-
-    Las observaciones que tienen valores altos o bajos en la Segunda Componente Principal son aquellos pingüinos que tienen características distintivas de pico y aletas que no están directamente relacionadas con el tamaño general. Por ejemplo, una aleta más larga o un pico más profundo en relación con su masa corporal.
-
-c) Construcción de un índice utilizando una combinación lineal de todas las variables:
-Un índice que valore de forma conjunta las características físicas de un pingüino podría construirse tomando los pesos de las cargas de las variables en las componentes principales y sumándolos para cada pingüino. Este índice sería esencialmente una puntuación compuesta basada en las componentes principales que hemos decidido retener.
-
-Para construirlo, podríamos calcular la suma ponderada de las variables estandarizadas para cada pingüino, utilizando los pesos de las cargas de las componentes principales que hemos retenido. Por ejemplo, si retenemos dos componentes principales, el índice para un pingüino podría ser:
-
-Índice_pingüino = (carga_CP1 × valor_variable_1) + (carga_CP2 × valor_variable_2) + ... + (carga_CPn × valor_variable_n)
-
-El valor del índice para una especie de pingüino representada por el conjunto de datos sería el promedio de los índices de todos los pingüinos dentro de esa especie.
-
-    Para la especie 'Adelie', calcularíamos el valor del índice utilizando los valores medios de sus características físicas multiplicados por las cargas correspondientes de las componentes principales retenidas.
-
-    Para la especie 'Chinstrap', haríamos lo mismo con los valores medios de las características físicas de los pingüinos de esa especie.
-
-Estos índices nos darían una puntuación que refleja las características físicas predominantes de las especies basadas en las componentes retenidas del PCA. Estos valores serían únicos para cada especie y podrían servir para diferenciar entre ellas basándonos en las características físicas medidas.
-
-Para realizar estos cálculos y obtener los valores de índice específicos para las especies mencionadas, necesitaríamos los datos crudos y los pesos de las cargas de las componentes de PCA.
