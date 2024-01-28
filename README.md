@@ -1,5 +1,28 @@
 # Análisis de Datos de Pingüinos para National Geographic
 
+Aquí tienes un índice en formato Markdown que puedes utilizar para estructurar el trabajo:
+
+markdown
+
+## Índice
+
+1. [Introducción](#introducción)
+2. [Descripción del Conjunto de Datos](#descripción-del-conjunto-de-datos)
+3. [Carga y Exploración del Dataset](#carga-y-exploración-del-dataset)
+    1. [Tareas Iniciales](#tareas-iniciales-05-puntos)
+    2. [Estadísticas Descriptivas](#estadísticas-descriptivas)
+    3. [Gráficos de Dispersión y Visualizaciones Relevantes](#gráficos-de-dispersión-y-visualizaciones-relevantes)
+4. [Reducción de Dimensionalidad](#reducción-de-dimensionalidad)
+    1. [Análisis de Componentes Principales (ACP)](#análisis-de-componentes-principales-acp-15-puntos)
+    2. [Interpretación de Componentes Principales](#interpretación-de-componentes-principales-2-pts)
+5. [Técnicas de Agrupamiento (Clustering)](#técnicas-de-agrupamiento-clustering)
+    1. [Determinación del Número de Grupos](#determinación-del-número-de-grupos-1-pt)
+    2. [Agrupamiento K-Means](#agrupamiento-k-means-1-pt)
+    3. [Validación del Agrupamiento](#validación-del-agrupamiento-1-pt)
+    4. [Comparación de Métodos de Agrupamiento](#comparación-de-métodos-de-agrupamiento-1-pt)
+    5. [Interpretación de los Grupos](#interpretación-de-los-grupos-1-pt)
+6. [Conclusión](#conclusión)
+
 ## Introducción
 
 Este documento presenta un análisis detallado del conjunto de datos 'penguins' de la librería 'seaborn' en Python, con el objetivo de aplicar técnicas de reducción de dimensionalidad y agrupamiento. Se busca explorar las relaciones entre las características físicas de diferentes especies de pingüinos y entre las propias especies.
