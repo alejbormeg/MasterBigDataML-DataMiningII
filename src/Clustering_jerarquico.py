@@ -330,3 +330,140 @@ df_sort = penguins_data_cluster.sort_values(by="label")
 cluster_centroids_orig = df_sort.groupby('label').mean()
 cluster_centroids_orig.round(2)
 # 'cluster_centroids' now contains the centroids of each cluster
+
+
+################################# PREGUNTA 8 ###############################
+# Paso 1: Aplicar PCA
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(df_std)
+
+# Paso 2: Crear un DataFrame con los componentes principales
+df_pca = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
+
+# Paso 3: Unir las etiquetas de especie con el DataFrame de PCA
+df_pca = pd.concat([df_pca, penguins_data['species']], axis=1)
+
+# Paso 4: Crear el scatter plot coloreado por especie
+plt.figure(figsize=(10, 8))
+sns.scatterplot(data=df_pca, x='PC1', y='PC2', hue='species', palette='Set1')
+plt.title('Gráfica de dispersión por especies')
+plt.xlabel('Componente principal 1')
+plt.ylabel('Componente principal 2')
+plt.legend(title='Species')
+plt.grid(True)
+plt.show()
+
+
+# Set the number of clusters (k=2)
+k = 3
+
+# Initialize the KMeans model
+kmeans = KMeans(n_clusters=k, random_state=0)
+
+# Fit the KMeans model to your standardized data
+kmeans.fit(df_std)
+
+# Get the cluster labels for your data
+kmeans_cluster_labels = kmeans.labels_
+
+print(kmeans_cluster_labels)
+
+"""Repetimos el gráfico anterior con el k-means. ¿Será igual el gráfico?"""
+
+# Step 2: Create a scatter plot with colors for clusters
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(df_std)
+
+# Create a new DataFrame for the 2D principal components
+df_pca = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
+
+plt.figure(figsize=(10, 6))
+
+# Loop through unique cluster assignments and plot data points with the same color
+for cluster in np.unique(kmeans_cluster_labels):
+    plt.scatter(df_pca.loc[kmeans_cluster_labels == cluster, 'PC1'],
+                df_pca.loc[kmeans_cluster_labels == cluster, 'PC2'],
+                label=f'Cluster {cluster}')
+# Add labels to data points
+for i, row in df_pca.iterrows():
+    plt.text(row['PC1'], row['PC2'], str(df_std.index[i]), fontsize=8)
+
+plt.title("2D PCA Plot with K-means Assignments")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# Assign data points to 4 clusters
+num_clusters = 3
+cluster_assignments = sch.fcluster(linkage_matrix, num_clusters, criterion='maxclust')
+
+# Display the cluster assignments
+print("Cluster Assignments:", cluster_assignments)
+
+# Display the dendrogram
+plt.show()
+
+"""# Añadimos la nueva variable a nustro data frame"""
+
+# Create a new column 'Cluster' and assign the 'cluster_assignments' values to it
+df_std['Cluster4'] = cluster_assignments
+
+# Now 'df' contains a new column 'Cluster' with the cluster assignments
+
+print(df_std["Cluster4"])
+
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(df_std)
+
+# Create a new DataFrame for the 2D principal components
+df_pca = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
+
+# Step 2: Create a scatter plot with colors for clusters
+plt.figure(figsize=(10, 6))
+
+# Loop through unique cluster assignments and plot data points with the same color
+for cluster in np.unique(cluster_assignments):
+    plt.scatter(df_pca.loc[cluster_assignments == cluster, 'PC1'],
+                df_pca.loc[cluster_assignments == cluster, 'PC2'],
+                label=f'Cluster {cluster}')
+# Add labels to data points
+for i, row in df_pca.iterrows():
+    plt.text(row['PC1'], row['PC2'], str(df_std.index[i]), fontsize=8)
+
+plt.title("2D PCA Plot with Cluster Assignments")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# Paso 3: Unir las etiquetas de especie con el DataFrame de PCA
+df_pca = pd.concat([df_pca, penguins_data['sex']], axis=1)
+
+# Paso 4: Crear el scatter plot coloreado por especie
+plt.figure(figsize=(10, 8))
+sns.scatterplot(data=df_pca, x='PC1', y='PC2', hue='sex', palette='Set1')
+plt.title('Gráfica de dispersión por sexo')
+plt.xlabel('Componente principal 1')
+plt.ylabel('Componente principal 2')
+plt.legend(title='Species')
+plt.grid(True)
+plt.show()
+
+
+# Paso 3: Unir las etiquetas de especie con el DataFrame de PCA
+df_pca = pd.concat([df_pca, penguins_data['island']], axis=1)
+
+# Paso 4: Crear el scatter plot coloreado por especie
+plt.figure(figsize=(10, 8))
+sns.scatterplot(data=df_pca, x='PC1', y='PC2', hue='island', palette='Set1')
+plt.title('Gráfica de dispersión por island')
+plt.xlabel('Componente principal 1')
+plt.ylabel('Componente principal 2')
+plt.legend(title='Species')
+plt.grid(True)
+plt.show()

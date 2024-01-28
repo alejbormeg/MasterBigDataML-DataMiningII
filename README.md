@@ -240,13 +240,13 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
     Realizamos el clustering jerárquico sobre la matriz de distancias: 
 
-    ![](./imgs/heatmap_clust_jer.png)
+    ![](./imgs/cluster_jer_2.png)
 
     Calculamos el dendograma:
 
     ![](./imgs/dendograma.png)
 
-    Atendiendo a los resultados, parece que 2 clusters son un número razonable. Vamos a asignar cada observación a su cluster correspondiente: 
+    Atendiendo a los resultados, parece que 2 clusters son un número razonable, pues como vemos, para la recta y=300, cortamos en dos puntos indicando 2 clusters y se puede apreciar que la distancia de estos dos segmentos es considerablemente grande antes de unirse en un único cluster, lo que sugiere que 2 es una buena elección de clusters para este dataset. Esta elección minimiza la varianza intra-cluster y maximiza la varianza inter-cluster, lo que significa que los datos dentro de cada cluster son lo más similares posible entre sí, mientras que los datos entre diferentes clusters son lo más diferentes posible. Vamos a asignar cada observación a su cluster correspondiente: 
 
     ![](./imgs/resultado_clust_jer.png)
 
@@ -262,12 +262,15 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
     Como vemos, obtenemos un resultado idéntico al del clustering jerárquico, debido a que los dos grupos están muy claramente diferenciados.
 
-    Vamos ahora a suponer que no heos realizado el clustering jerárquico y vamos a elegir el número de grupos en base al método del codo y Shilouette. Los resultados obtenidos son los siguientes: 
+    Vamos ahora a suponer que no hemos realizado el clustering jerárquico y vamos a elegir el número de grupos en base al método del codo y Shilouette. Los resultados obtenidos son los siguientes: 
 
     ![](./imgs/Codo_no_jer.png)
     ![](./imgs/Silouhette_no_jer.png)
 
-    Como vemos, con ambos métodos se sugiere que un total de dos grupos es suficiente, en el método del codo porque en esta cifra se puede apreciar el "codo" del gráfico y en el Shilouette porque es en 2 dónde se alcanza el máximo.
+    
+    En la gráfica del método del codo, parece que el codo se produce alrededor de k=3, donde la tasa de disminución de WCSS cambia notablemente de ser muy empinada a más moderada. Sin embargo, en la gráfica del método de Silhouette una puntuación alta indica que los objetos están bien emparejados a su propio cluster y mal emparejados a los clusters vecinos. En tu gráfica, el valor más alto de la puntuación de la silueta ocurre en k=2.
+
+    Dado que en este ejercicio hemos decidido dar más peso a tener dos clusters bien diferenciados más que a capturar la variabilidad de los datos, vamos a inclinarnos por tomar 2 clusters para resolver el ejercicio. Con esto obtendríamos la misma gráfica que al comienzo.
 
 
 #### Validación del Agrupamiento (1 pt)
@@ -284,22 +287,67 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
     * **Clusters (0 y 1):** Hay dos clusters representados por dos colores diferentes (digamos, naranja y púrpura). No se observan valores negativos significativos en el gráfico de silueta, lo que generalmente indicaría que los puntos podrían haber sido asignados a clusters incorrectos.
 
-    * **Tamaño de los Clusters:** El gráfico sugiere que el tamaño de los dos clusters podría ser desigual. El cluster etiquetado como '0' parece ser más grande que el cluster '1', lo que indica que contiene más puntos.
+    * **Tamaño de los Clusters:** El gráfico sugiere que el tamaño de los dos clusters es desigual. El cluster etiquetado como '0' parece ser más grande que el cluster '1', lo que indica que contiene más puntos. Esto no es necesariamente malo, ya que los algoritmos de agrupamiento no requieren que los clusters tengan tamaños iguales.
 
     * **Consistencia en los Clusters:** El cluster naranja parece tener una consistencia de anchura en sus valores de silueta, lo que sugiere que los puntos dentro de este cluster son bastante similares entre sí. Por otro lado, el cluster púrpura tiene una mayor variación en la anchura, lo que puede indicar que hay más variabilidad en la similitud de los puntos dentro de ese cluster.
+
+    La información proporcionada sugiere que el algoritmo de agrupamiento ha funcionado bien en este aspecto, logrando captar la estructura interna inherente a los datos y encontrando un modo de separarlos en dos clusters bien diferenciados.
 
 #### Comparación de Métodos de Agrupamiento (1 pt)
 
 1. **Jerárquico vs. K-Means**
-   - Comparación y contraste de los resultados obtenidos.
+    Como los resultados obtenidos por ambos métodos son idénticos, pues hemos elegido el mismo número de clusters y hemos obtenido la misma asignación de cada observación a los clusters, vamos a ver las diferencias entre esto métodos desde el punto de vista de las características de cada algoritmo y de la interpretación de los resultados:
+
+    ##### Características de los Algoritmos
+    - KMeans generalmente tiene una complejidad temporal más baja que el clustering jerárquico, especialmente para grandes conjuntos de datos. KMeans tiene una complejidad de `O(n)`, donde `n` es el número de datos, mientras que el clustering jerárquico tiene una complejidad de `O(n^2)` en su forma más básica. Por este motivo, si hubiésemos trabajado con una submuestra representativa de un dataset más amplio y fuese importante el ahorro computacional, sería mejor apostar por la alternativa de KMeans.
+
+    - KMeans puede dar diferentes resultados en diferentes ejecuciones si se inicializan diferentes centroides (no es determinista), a menos que se utilice una semilla aleatoria fija. Por otro lado, el clustering jerárquico es determinista, dando siempre el mismo resultado para un conjunto de datos dado. Por lo tanto, a menos que usemos siempre la misma semilla y los datos no tuvieran una separación clara, el algoritmo KMeans no tendría por qué darnos la misma solución siempre.
+
+    - Los dendrogramas del clustering jerárquico ofrecen una visualización detallada y una interpretación intuitiva de la estructura de los datos y las relaciones entre clusters. KMeans no ofrece una visualización tan rica inherentemente, aunque se pueden utilizar técnicas como el análisis de componentes principales (PCA) para visualizar los clusters tal y cómo se ha hecho en esta práctica. No obstante, para un conjunto de datos mayor, lejos de ser claro, el dendograma obtenido podría ser lioso y complicar la interpretación de lo que está sucediendo.
+
 
 #### Interpretación de los Grupos (1 pt)
 
 1. **Análisis de los Grupos Identificados**
-   - Interpretación y análisis de patrones y tendencias.
 
-### Conclusión
+    Si representamos el gráfico de dispersión coloreando las observaciones según la especie, encontramos lo siguiente:
 
-1. **Resumen de Hallazgos**
-   - Discusión de limitaciones o desafíos encontrados.
-   - Conclusiones finales del análisis.
+    ![](./imgs/image_ejercicio_8.png)
+
+    Se puede observar cómo con la técnica de PCA se consigue separar claramente las especies "Adelie" y "Chinstrap" de la especie "Gentoo" de pingüinos, por otro lado, vemos como después de aplicar el algoritmo KMeans (y ocurre igual con el algoritmo jerárquico), si representamos los grupos tras aplicar PCA, vemos como un cluster engloba todas las observaciones del grupo de pingüinos "Gentoo" y el otro cluster engloba todos los ejemplares de las especies "Adelie" y "Chinstrap". Esto sugiere que los algoritmos de Clustering están consiguiendo extraer adecuadamente las diferencias físicas subyacentes a cada especie de pingüinos siendo capaces de diferenciarlos en los dos grandes conjuntos y que después por medio de la técnica PCA se hace esta separación mucho más palpable. De hecho, si probamos a usar 3 clusters con el algoritmo Kmeans y el jerárquico, se obtendría lo siguiente:
+
+    ![](./imgs/ejercicio_8_kmeans_3.png)
+    ![](./imgs/ejercicio_8_cluster_jer_3.png)
+
+    Que coincide casi exactamente con la distribución de las 3 especies de pingüinos. De aquí podemos concluir pues, que estos algoritmos de clusterización, en base a las características numéricas del dataset, están siendo capaces de separar los pingüinos según su especie. De hecho si representamos los datos atendiendo al sexo o a la isla de procedencia, vemos como los datos no están separados atendiendo a estas características.
+
+    ![](./imgs/ejercicio_8_scatter_isla.png)
+    ![](./imgs/ejercicio_8_scatter_sex.png)
+
+    Para el sexo vemos Como los datos están mezclados en los dos conjuntos diferenciados, y para el caso de la isla vemos que en conjunto de la derecha predominan los ejemplares de la isla "Biscoe", pero hay ejemplares de esta isla también en el otro conjunto.
+
+    Recordamos que la varianza explicada por estas dos componentes principales es del 88% aproximadamente, que da una base sólida a este análisis.
+
+### Resumen de hallazgos y conclusión
+
+#### Resumen de hallazgos
+
+* **Reducción de Dimensionalidad:** El análisis de componentes principales (PCA) fue capaz de reducir la dimensionalidad del conjunto de datos, concentrando la variabilidad significativa en **dos componentes principales** que explican aproximadamente el **88% de la variabilidad total**. Esto sugiere que la mayoría de las diferencias entre las observaciones se deben a estas dos dimensiones sintéticas.
+
+* **Diferenciación de Especies:** Se identificaron **claras distinciones** entre las especies de pingüinos "Adelie" y "Chinstrap" frente a la especie "Gentoo". Estas diferencias se manifestaron tanto en la visualización de PCA como en los resultados de los algoritmos de clustering jerárquico y KMeans.
+
+* **Comparación de Métodos de Clustering:** A pesar de que tanto el clustering jerárquico como el KMeans sugirieron dos clusters principales (atendiendo a los coeficientes de silueta), el análisis jerárquico proporcionó una visión más rica y detallada de la estructura de los datos gracias a la visualización del dendrograma.
+
+* **Validación de Agrupamientos:** Los coeficientes de silueta indicaron que los clusters formados eran coherentes y bien definidos, lo que implica que las asignaciones de los pingüinos a los clusters fueron estadísticamente significativas.
+
+* **Atributos no Diferenciadores:** Se observó que otros atributos como el sexo y la isla de origen no ofrecían una separación clara en el contexto de los clusters identificados, lo que sugiere que las variables numéricas de este dataset no aportan diferencias significativas en este sentido.
+
+#### Conclusiones
+
+El análisis confirma que las técnicas de reducción de dimensionalidad y clustering pueden ser herramientas poderosas para entender complejos conjuntos de datos. En el contexto del dataset de "penguins" de `seaborn`, los algoritmos de clustering aplicados son eficientes en la identificación de grupos naturales dentro del conjunto de datos de pingüinos, permitiendo una diferenciación clara que coincide con las especies biológicas representadas en el dataset.
+
+Para comprender el interés de los resultados obtenidos, cabe resaltar que la capacidad de separar las especies de pingüinos basándose en características morfológicas tiene aplicaciones prácticas en ecología y conservación, y puede ayudar a los biólogos a entender mejor las adaptaciones físicas de estas especies a sus entornos. Por ejemplo, las diferencias en la longitud del pico y la profundidad pueden estar relacionadas con diferentes dietas y comportamientos alimenticios, mientras que las diferencias en la longitud de la aleta y la masa corporal podrían estar asociadas con la capacidad de natación y el aislamiento térmico.
+
+Este estudio también resalta la importancia de utilizar múltiples técnicas y enfoques para validar los resultados. Aunque la elección del número de clusters puede ser algo subjetiva, la combinación de métodos jerárquicos, KMeans y métricas de validación como el coeficiente de silueta proporciona una base sólida para las decisiones analíticas.
+
+En resumen, los resultados del análisis son robustos y proporcionan una base de conocimiento ampliable para futuras investigaciones sobre las especies de pingüinos y sus características físicas. Con estos hallazgos, National Geographic podría informar y educar al público sobre la diversidad y adaptación de las especies de pingüinos, así como sobre las técnicas de análisis de datos que permiten tales descubrimientos.
