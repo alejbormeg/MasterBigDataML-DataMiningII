@@ -201,103 +201,34 @@ plot_pca_scatter(pca, penguins_data_numeric_estandarizadas, fit.n_components)
 ################################################################################
           
 plot_pca_scatter_with_vectors(pca, penguins_data_numeric_estandarizadas, fit.n_components, fit.components_)
-   
+
+
+# Calculando el Índice de Características Físicas (ICF) para cada pingüino
+
+penguins_data_cp = pd.concat([penguins_data_numeric_estandarizadas_cp, penguins_data['species']], axis=1)
+
+# Asumiendo que cada variable tiene una carga asociada con el primer componente principal
+cargas = cos2.iloc[:, 0]  # Seleccionando las cargas del primer componente principal
+
+# Calculando el ICF con las nuevas cargas
+penguins_data_cp['ICF'] = (
+    ((cargas['bill_length_mm_z'] * penguins_data_cp['bill_length_mm_z']) +
+    (cargas['bill_depth_mm_z'] * penguins_data_cp['bill_depth_mm_z']) +
+    (cargas['flipper_length_mm_z'] * penguins_data_cp['flipper_length_mm_z']) +
+    (cargas['body_mass_g_z'] * penguins_data_cp['body_mass_g_z']))**2
+)
+
+print(penguins_data_cp['ICF'])
+
+# Recalculando el valor del ICF para un pingüino aleatorio y promedios para Adelie y Chinstrap
+random_penguin_icf = penguins_data_cp['ICF'].sample(n=1).iloc[0]
+adelie_icf_mean = penguins_data_cp[penguins_data_cp['species'] == 'Adelie']['ICF'].mean()
+chinstrap_icf_mean = penguins_data_cp[penguins_data_cp['species'] == 'Chinstrap']['ICF'].mean()
+gentoo_icf_mean = penguins_data_cp[penguins_data_cp['species'] == 'Gentoo']['ICF'].mean()
+
+print(f"Indice de pinguino aleatorio: {random_penguin_icf}")
+print(f"Indice Chinstrap: {chinstrap_icf_mean}")
+print(f"Indice Adelie: {adelie_icf_mean}")
+print(f"Indice Gentoo: {gentoo_icf_mean}")
+
 ##################################################
-# # Cargar un archivo Excel llamado 'notas.xlsx' en un DataFrame llamado notas.
-# notas_S = pd.read_excel('notas_S.xlsx') 
-
-# # Establecer la columna 'Alumno' como índice del DataFrame notas y eliminarla.
-# notas_S = notas_S.set_index('Alumno', drop=True)
-
-# # Guarda la variable el indice y 'EXTRA_ESC' en un dataframe
-# extra_S = notas_S.iloc[:, [7]]
-
-# # Elimina la variable 'EXTRA_ESC' del DataFrame 'notas'.
-# notas_S = notas_S.drop(notas_S.columns[7], axis=1)
-
-# # Calcular la media y la desviación estándar de 'notas'
-# media_notas = notas.mean()
-# desviacion_estandar_notas = notas.std()
-
-# # Estandarizar 'notas_S' utilizando la media y la desviación estándar de 'notas'
-# notas_S_estandarizadas = pd.DataFrame(((notas_S - media_notas) / desviacion_estandar_notas))
-
-# notas_S_estandarizadas.columns = ['{}_z'.format(variable) for variable in variables]
-
-# # Agregar las observaciones estandarizadas a 'notas'
-# notas_sup = pd.concat([notas_estandarizadas, notas_S_estandarizadas])
-
-# # Calcular las componentes principales para el conjunto de datos combinado
-# componentes_principales_sup = pca.transform(notas_sup)
-
-# # Calcular las componentes principales para el conjunto de datos combinado
-# # y renombra las componentes
-# resultados_pca_sup = pd.DataFrame(fit.transform(notas_sup), 
-#                               columns=['Componente {}'.format(i) for i in range(1, fit.n_components_+1)],
-#                               index=notas_sup.index)
-
-# # Representacion observaciones + suplementarios
-# plot_pca_scatter(pca, notas_sup, fit.n_components)
-
-
-
-
-# ######################################################
-# # Añadimos la variable categórica "EXTRA_ESC" en los datos
-# notas_componentes_sup= pd.concat([notas_sup, resultados_pca_sup], axis=1)  
-
-# extra_sup = pd.concat([extra, extra_S], axis=0)
-# notas_componentes_sup_extra= pd.concat([notas_componentes_sup,
-#                                                extra_sup], axis=1)  
-
-# #################################################################################################
-
-# def plot_pca_scatter_with_categories(datos_componentes_sup_var, componentes_principales_sup, n_components, var_categ):
-#     """
-#     Genera gráficos de dispersión de observaciones en pares de componentes principales seleccionados con categorías.
-
-#     Args:
-#         datos_componentes_sup_var (pd.DataFrame): DataFrame que contiene las categorías.
-#         componentes_principales_sup (np.ndarray): Matriz de componentes principales.
-#         n_components (int): Número de componentes principales seleccionadas.
-#         var_categ (str): Nombre de la variable introducida
-#     """
-#     # Obtener las categorías únicas
-#     categorias = datos_componentes_sup_var[var_categ].unique() #Modificar por el nombre de la variable categórica
-
-#     for i in range(n_components):
-#         for j in range(i + 1, n_components):  # Evitar pares duplicados
-#             # Crear un gráfico de dispersión de las observaciones en las dos primeras componentes principales
-#             plt.figure(figsize=(8, 6))  # Ajustar el tamaño de la figura si es necesario
-#             plt.scatter(componentes_principales_sup[:, i], componentes_principales_sup[:, j])
-
-#             for categoria in categorias:
-#                 # Filtrar las observaciones por categoría
-#                 observaciones_categoria = componentes_principales_sup[datos_componentes_sup_var[var_categ] == categoria]
-#                 # Calcular el centroide de la categoría
-#                 centroide = np.mean(observaciones_categoria, axis=0)
-#                 plt.scatter(centroide[i], centroide[j], label=categoria, s=100, marker='o')
-
-#             # Añadir etiquetas a las observaciones
-#             etiquetas_de_observaciones = list(datos_componentes_sup_var.index)
-
-#             for k, label in enumerate(etiquetas_de_observaciones):
-#                 plt.annotate(label, (componentes_principales_sup[k, i], componentes_principales_sup[k, j]))
-#                 # Dibujar líneas discontinuas que representen los ejes
-
-#             # Dibujar líneas discontinuas que representen los ejes
-#             plt.axhline(0, color='black', linestyle='--', linewidth=0.8)
-#             plt.axvline(0, color='black', linestyle='--', linewidth=0.8)
-
-#             # Etiquetar los ejes
-#             plt.xlabel(f'Componente Principal {i + 1}')
-#             plt.ylabel(f'Componente Principal {j + 1}')
-
-#             # Establecer el título del gráfico
-#             plt.title('Gráfico de Dispersión de Observaciones en PCA')
-
-#             # Mostrar la leyenda para las categorías
-#             plt.legend()
-#             plt.show()
-            
-# plot_pca_scatter_with_categories(notas_componentes_sup_extra, componentes_principales_sup, fit.n_components, 'EXTRA_ESC')

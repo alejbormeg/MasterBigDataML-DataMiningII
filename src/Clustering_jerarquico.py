@@ -124,13 +124,13 @@ linkage_matrix = sch.linkage(df_std_distance, method='ward')  # You can choose a
 dendrogram = sch.dendrogram(linkage_matrix, labels=penguins_data_cluster.index, leaf_font_size=9, leaf_rotation=90)
 
 # Add a horizontal line at y=100
-plt.axhline(y=300, color='r', linestyle='--')
+plt.axhline(y=150, color='r', linestyle='--')
 
 # Display the dendrogram
 plt.show()
 
 # Assign data points to 4 clusters
-num_clusters = 2
+num_clusters = 3
 cluster_assignments = sch.fcluster(linkage_matrix, num_clusters, criterion='maxclust')
 
 # Display the cluster assignments
@@ -177,8 +177,8 @@ plt.show()
 
 #################################### Pregunta 5 ###################################################################
 
-# Set the number of clusters (k=2)
-k = 2
+# Set the number of clusters (k=3)
+k = 3
 
 # Initialize the KMeans model
 kmeans = KMeans(n_clusters=k, random_state=0)
@@ -273,7 +273,7 @@ plt.show()
 """Run K-means clustering with the optimal number of clusters (determined using the Silhouette Method) and obtain cluster labels for each data point:"""
 
 # Assuming 'df_std_distance' is your standardized data and '4' is the optimal number of clusters
-kmeans = KMeans(n_clusters=2, random_state=0)
+kmeans = KMeans(n_clusters=3, random_state=0)
 kmeans.fit(df_std)
 labels = kmeans.labels_
 

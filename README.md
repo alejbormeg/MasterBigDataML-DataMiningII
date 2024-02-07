@@ -1,9 +1,5 @@
 # Análisis de Datos de Pingüinos para National Geographic
 
-Aquí tienes un índice en formato Markdown que puedes utilizar para estructurar el trabajo:
-
-markdown
-
 ## Índice
 
 1. [Introducción](#introducción)
@@ -58,12 +54,12 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
     Esto nos da las primeras cinco filas del conjunto de datos para tener una primera impresión del tipo de datos con los que trabajaremos:
 
     ```bash
-        species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex
-    0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    Male
-    1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  Female
-    2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  Female
-    3  Adelie  Torgersen             NaN            NaN                NaN          NaN     NaN
-    4  Adelie  Torgersen            36.7           19.3              193.0       3450.0  Female
+            species     island  bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g     sex
+        0  Adelie  Torgersen            39.1           18.7              181.0       3750.0    Male
+        1  Adelie  Torgersen            39.5           17.4              186.0       3800.0  Female
+        2  Adelie  Torgersen            40.3           18.0              195.0       3250.0  Female
+        3  Adelie  Torgersen             NaN            NaN                NaN          NaN     NaN
+        4  Adelie  Torgersen            36.7           19.3              193.0       3450.0  Female
     ```
 
 2. **Estadísticas Descriptivas**
@@ -184,6 +180,18 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
 2. **PCA con Datos Estandarizados (1 pt)**
 
+    En primer lugar estandarizamos los datos usando la clase `StandardScaler()` con el siguiente código:
+    
+    ```py
+    penguins_data_numeric_estandarizadas = pd.DataFrame(
+    StandardScaler().fit_transform(penguins_data_numeric),  # Datos estandarizados
+    columns=['{}_z'.format(variable) for variable in numeric_variables],  # Nombres de columnas estandarizadas
+    index=penguins_data_numeric.index  # Índices (etiquetas de filas) del DataFrame
+    )
+    ```
+
+    Tras ello nos disponemos a realizar el algoritmo PCA:
+
     **Cálculo de componentes y análisis de autovalores:**
     Los autovalores obtenidos de un PCA proporcionan una medida de la variabilidad que cada componente principal captura del conjunto de datos.
     En este caso, los autovalores y la variabilidad explicada por cada componente son:
@@ -211,6 +219,10 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
     ![Imagenes unidas](./imgs/Union_1.png)
 
+    ![](./imgs/grafico_dispersion.png)
+
+    ![](./imgs/grafico_dispersion_vectores.png)
+
     La representación gráfica de las variables en los componentes principales, conocida como biplot, permite observar cómo cada variable contribuye a los componentes. Las imágenes que muestran las contribuciones proporcionales y los cuadrados de las cargas en las componentes principales revelan la importancia relativa de cada medida física en los componentes seleccionados.
 
     * *Componente 1*: Este componente captura la mayor varianza y parece estar fuertemente influenciado por todas las variables físicas, como la longitud de la aleta y la masa corporal, lo que sugiere que puede representar el tamaño general o la 'corpulencia' de los pingüinos.
@@ -218,9 +230,6 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
     * *Componente 2*: El segundo componente, aunque captura menos varianza que el primero, parece estar más relacionado con la longitud del pico y la profundidad del pico, lo que podría reflejar adaptaciones específicas relacionadas con el comportamiento alimenticio de los pingüinos o diferencias entre las especies.
     
 2. **Representación de Observaciones en Nuevos Ejes**
-    ![](./imgs/grafico_dispersion.png)
-
-    ![](./imgs/grafico_dispersion_vectores.png)
 
     Las especies de pingüinos que se destacan en cada componente se pueden inferir de la posición de las observaciones en el gráfico de dispersión de PCA.
 
@@ -234,17 +243,24 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
     El **índice de características físicas (ICF)** podría definirse como una combinación lineal de las variables estandarizadas, ponderadas por su contribución al primer componente principal, que es el que más varianza explica. Este índice se calcularía de la siguiente manera para cada pingüino:
 
     ```plaintext
-    ICF = (carga_1 * bill_length_mm_z) + (carga_2 * bill_depth_mm_z) + 
-        (carga_3 * flipper_length_mm_z) + (carga_4 * body_mass_g_z)
+    ICF = ((carga_1 * bill_length_mm_z) + (carga_2 * bill_depth_mm_z) + 
+        (carga_3 * flipper_length_mm_z) + (carga_4 * body_mass_g_z))**2
     ```
 
     Donde carga_n es la carga de la variable en el Componente Principal 1 y variable_z es el valor estandarizado de dicha variable.
 
     Para evaluar el índice de cada especie, calcularíamos el promedio del ICF para todas las observaciones de cada especie. Esto nos daría una puntuación única que reflejaría las tendencias generales en las características físicas para las especies Adelie, Chinstrap y Gentoo. Los valores altos del índice indicarían pingüinos con características físicas que corresponden positivamente con el primer componente principal, mientras que los valores bajos indicarían lo contrario.
 
-    Este índice podría tener aplicaciones prácticas, por ejemplo, en estudios de conservación para monitorear la salud y el bienestar de las poblaciones de pingüinos en relación con sus hábitats y disponibilidad de recursos.
-
     Este enfoque proporciona una herramienta simplificada para analizar y comparar las características físicas de las diferentes especies de pingüinos, lo cual es particularmente útil cuando se manejan múltiples variables y se desea tener una visión integrada del fenotipo de los organismos estudiados.
+
+    Si claculamos algunos valores para un pingüino aleatorio y las diversas especies obtenemos:
+
+    * Indice de pinguino aleatorio: 5.1306
+    * Indice Chinstrap: 1.4462
+    * Indice Adelie: 3.4935
+    * Indice Gentoo: 5.1208
+
+    Esto indica que el pingüino posiblmente pertenezca a la especie *Gentoo*
 
 ### Técnicas de Agrupamiento (Clustering)
 
@@ -269,7 +285,7 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
     ![](./imgs/dendograma.png)
 
-    Atendiendo a los resultados, parece que 2 clusters son un número razonable, pues como vemos, para la recta y=300, cortamos en dos puntos indicando 2 clusters y se puede apreciar que la distancia de estos dos segmentos es considerablemente grande antes de unirse en un único cluster, lo que sugiere que 2 es una buena elección de clusters para este dataset. Esta elección minimiza la varianza intra-cluster y maximiza la varianza inter-cluster, lo que significa que los datos dentro de cada cluster son lo más similares posible entre sí, mientras que los datos entre diferentes clusters son lo más diferentes posible. Vamos a asignar cada observación a su cluster correspondiente: 
+    Atendiendo a los resultados, parece que 2 clusters son un número razonable, pues como vemos, para la recta y=150, cortamos en tres puntos indicando 3 clusters y se puede apreciar que la distancia de estos dos segmentos es considerablemente, lo que sugiere que 3 es una buena elección de clusters para este dataset. Esta elección minimiza la varianza intra-cluster y maximiza la varianza inter-cluster, lo que significa que los datos dentro de cada cluster son lo más similares posible entre sí, mientras que los datos entre diferentes clusters son lo más diferentes posible. Vamos a asignar cada observación a su cluster correspondiente: 
 
     ![](./imgs/resultado_clust_jer.png)
 
@@ -279,11 +295,11 @@ El conjunto de datos incluye información sobre varias especies de pingüinos, r
 
 1. **Implementación y Experimentación con K-Means**
 
-    En base al estudio previo se ha optado por realizar el algoritmo con 2 grupos:
+    En base al estudio previo se ha optado por realizar el algoritmo K-Means con 3 grupos:
 
     ![](./imgs/resultado_clust_no_jer.png)
 
-    Como vemos, obtenemos un resultado idéntico al del clustering jerárquico, debido a que los dos grupos están muy claramente diferenciados.
+    Como vemos, obtenemos un resultado prácticamente idéntico al del clustering jerárquico.
 
     Vamos ahora a suponer que no hemos realizado el clustering jerárquico y vamos a elegir el número de grupos en base al método del codo y Shilouette. Los resultados obtenidos son los siguientes: 
 
